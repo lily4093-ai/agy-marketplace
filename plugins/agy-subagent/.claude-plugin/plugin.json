@@ -1,0 +1,8 @@
+{
+  "name": "agy-subagent",
+  "version": "0.1.0",
+  "description": "Delegates simple search/lookup and repetitive tasks to the agy CLI (Google Antigravity, Gemini 3.8 Flash) as a lightweight subagent.",
+  "author": {
+    "name": "gwon"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "agy-marketplace",
+  "description": "Personal local marketplace for the agy-subagent plugin.",
+  "owner": {
+    "name": "gwon"
+  },
+  "plugins": [
+    {
+      "name": "agy-subagent",
+      "description": "Delegates simple search/lookup and repetitive tasks to the agy CLI (Google Antigravity, Gemini 3.8 Flash) as a lightweight subagent.",
+      "source": "./plugins/agy-subagent"
+    }
+  ]
+}
