@@ -9,4 +9,9 @@
 #
 # Only use this for tasks that were already decided to need write/exec
 # access — it carries the same risk as the flag itself.
-exec agy "$@" --dangerously-skip-permissions
+#
+# Runs through stdbuf to force line-buffered stdout/stderr: agy fully
+# buffers output when it isn't attached to a TTY (e.g. redirected to a file
+# for a backgrounded run), so without this, --output-format stream-json
+# only appears all at once at exit instead of line-by-line as it happens.
+exec stdbuf -oL -eL agy "$@" --dangerously-skip-permissions

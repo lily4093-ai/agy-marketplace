@@ -51,6 +51,22 @@ Only reach for the write wrapper when the task clearly requires it; default to p
   Even with output redirected and running in the background, this is still
   the exact same trusted invocation — it's pre-approved the same way.
 
+### Checking progress on a long-running call
+
+Plain `--output-format json` writes nothing to the output file until the
+whole call finishes — there's no way to see progress with it, only whether
+it's done. For a call long enough that you (or the user) want to see it
+working, use `--output-format stream-json` instead: the wrapper runs `agy`
+through `stdbuf -oL -eL`, so even redirected to a file it writes one JSON
+line per event (tool started, tool finished, final result) as they happen
+instead of buffering everything until exit. Read/tail that file at any point
+to see the latest `step_update` (which tool it's running, ACTIVE vs DONE);
+the last line, `{"event":"result",...}`, carries the same `status`/`response`
+fields as plain `json` mode — read `.result` from it once the process ends.
+Separately, whatever background-task tracking the harness gives you for a
+`run_in_background` Bash call tells you if the process is still alive at
+all, independent of what's in the file.
+
 **Model selection** — pick per task, don't default blindly:
 - `gemini-3.8-flash-medium` — default for most search and simple repetitive tasks.
 - `gemini-3.8-flash-high` — when the task, while still simple, needs a bit more multi-step care (e.g. reconciling many search hits, a repetitive edit whose pattern isn't perfectly uniform).
