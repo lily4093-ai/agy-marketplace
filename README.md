@@ -16,9 +16,8 @@ Claude.
 ## Install
 
 ```
-/plugin marketplace add https://github.com/<owner>/agy-marketplace
+/plugin marketplace add https://github.com/lily4093-ai/agy-marketplace
 /plugin install agy-subagent@agy-marketplace
 ```
 
-(Replace `<owner>` with this repo's GitHub username once published, or use a
-local path instead of the URL for local-only use.)
+(Or use a local path instead of the URL for local-only use.)
