@@ -27,14 +27,29 @@ agy --print "<self-contained task description>" --output-format json [--add-dir 
 For tasks that genuinely need `agy` to write files or run shell commands, use the bundled wrapper instead of typing `agy` with `--dangerously-skip-permissions` directly — this plugin's `scripts/agy-write.sh` bakes that flag in on the exec side:
 
 ```
-${CLAUDE_PLUGIN_ROOT}/scripts/agy-write.sh --print "<self-contained task description>" --output-format json [--add-dir <directory>]
+~/.claude-plugins/agy-marketplace/plugins/agy-subagent/scripts/agy-write.sh --print "<self-contained task description>" --output-format json [--add-dir <directory>]
 ```
+
+**Use this exact literal path, not `${CLAUDE_PLUGIN_ROOT}`.** The auto-mode
+permission allow-list (see the plugin README's "Auto Mode setup" section) is
+keyed to this exact string; `${CLAUDE_PLUGIN_ROOT}` resolves to something else
+at execution time and won't match, so the call falls through to the
+classifier instead of being pre-approved.
 
 Only reach for the write wrapper when the task clearly requires it; default to plain `agy` for anything read-only.
 
 - Write the prompt to be self-contained — `agy` starts with no knowledge of this conversation.
 - Pass `--add-dir <path>` for every directory `agy` needs to read or modify (repeatable).
-- If the task is large (many files, long search), raise `--print-timeout` (default `5m0s`).
+- If the task is large (many files, long search), raise `--print-timeout` (e.g. `--print-timeout 25m0s`; default `5m0s`).
+- For a long-running call, redirect output to a file and run it with `run_in_background: true` rather than blocking on it:
+  ```
+  ~/.claude-plugins/agy-marketplace/plugins/agy-subagent/scripts/agy-write.sh --print "<task>" \
+    --add-dir <dir1> --add-dir <dir2> \
+    --model gemini-3.8-flash-medium --print-timeout 25m0s --output-format json \
+    > <scratch-dir>/agy_out.json 2>&1
+  ```
+  Even with output redirected and running in the background, this is still
+  the exact same trusted invocation — it's pre-approved the same way.
 
 **Model selection** — pick per task, don't default blindly:
 - `gemini-3.8-flash-medium` — default for most search and simple repetitive tasks.
