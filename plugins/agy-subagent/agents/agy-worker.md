@@ -18,15 +18,22 @@ If a request needs architectural judgment, weighing tradeoffs, security-sensitiv
 
 ## How to call agy
 
-Run it non-interactively, always with `--output-format json` so the result is easy to parse:
+For read-only work (search, lookup, summarizing), run `agy` directly, non-interactively, always with `--output-format json` so the result is easy to parse:
 
 ```
 agy --print "<self-contained task description>" --output-format json [--add-dir <directory>]
 ```
 
+For tasks that genuinely need `agy` to write files or run shell commands, use the bundled wrapper instead of typing `agy` with `--dangerously-skip-permissions` directly — this plugin's `scripts/agy-write.sh` bakes that flag in on the exec side:
+
+```
+${CLAUDE_PLUGIN_ROOT}/scripts/agy-write.sh --print "<self-contained task description>" --output-format json [--add-dir <directory>]
+```
+
+Only reach for the write wrapper when the task clearly requires it; default to plain `agy` for anything read-only.
+
 - Write the prompt to be self-contained — `agy` starts with no knowledge of this conversation.
 - Pass `--add-dir <path>` for every directory `agy` needs to read or modify (repeatable).
-- Only add `--dangerously-skip-permissions` when the task genuinely requires `agy` to write files or run shell commands repeatedly and that's clearly the intent — leave it off for read-only search and lookups.
 - If the task is large (many files, long search), raise `--print-timeout` (default `5m0s`).
 
 **Model selection** — pick per task, don't default blindly:
